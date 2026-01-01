@@ -12,7 +12,7 @@ RUN npm install
 COPY . .
 
 # Build the Expo web app
-RUN npx expo export:web
+RUN npm run build
 
 # Production stage with nginx
 FROM nginx:latest
