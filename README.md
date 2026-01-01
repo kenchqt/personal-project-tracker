@@ -56,6 +56,4 @@ A simple and minimal project tracking app built with React Native and Firebase. 
 └── utils/              # Utility functions and storage
 ```
 
-## License
-
-MIT
+(For educational use only.)
