@@ -1,6 +1,18 @@
-# Welcome to your Expo app 👋
+# Personal Project Tracker
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A simple and minimal project tracking app built with Expo and Firebase.
+
+Track your coding or school projects with status management, deadlines, and tech stack tracking.
+
+## Features
+
+- ✅ Create, Read, Update, Delete projects
+- ✅ Status tracking (Planned → In Progress → Done → Cancelled)
+- ✅ Deadline management
+- ✅ Tech stack tracking
+- ✅ Search functionality
+- ✅ Firebase backend for cloud sync
+- ✅ Dark mode support
 
 ## Get started
 
@@ -10,10 +22,20 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Set up Firebase (Required)
+
+   See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) for detailed instructions.
+   
+   Quick setup:
+   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+   - Get your Firebase config
+   - Add credentials to `config/firebase.ts` or create a `.env` file
+   - Enable Firestore Database in test mode
+
+3. Start the app
 
    ```bash
-   npx expo start
+   npm start
    ```
 
 In the output, you'll find options to open the app in a
