@@ -29,6 +29,29 @@ A simple and minimal project tracking app built with React Native and Firebase. 
 
 ## Getting Started
 
+### Option 1: Using Docker (Recommended)
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/kenchqt/personal-project-tracker.git
+   cd personal-project-tracker
+   ```
+
+2. Build the Docker image:
+   ```bash
+   docker build -t personal-project-tracker .
+   ```
+
+3. Run the container:
+   ```bash
+   docker run -d -p 8080:80 personal-project-tracker
+   ```
+
+4. Access the app:
+   Open your browser and go to: http://localhost:8080
+
+### Option 2: Local Development
+
 1. Install dependencies:
    ```bash
    npm install
@@ -55,5 +78,29 @@ A simple and minimal project tracking app built with React Native and Firebase. 
 ├── types/              # TypeScript type definitions
 └── utils/              # Utility functions and storage
 ```
+
+## Docker
+
+This project is fully dockerized. See [DOCKER.md](./DOCKER.md) for detailed Docker setup and usage instructions.
+
+**Quick Docker Commands:**
+```bash
+# Build
+docker build -t personal-project-tracker .
+
+# Run
+docker run -d -p 8080:80 personal-project-tracker
+
+# Stop
+docker stop <container-id>
+
+# View logs
+docker logs <container-id>
+```
+
+## Documentation
+
+- [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) - Firebase configuration guide
+- [DOCKER.md](./DOCKER.md) - Docker setup and usage
 
 (For educational use only.)
