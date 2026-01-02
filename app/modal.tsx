@@ -20,6 +20,15 @@ import {
   View,
 } from 'react-native';
 
+// For web date input
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      input: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+    }
+  }
+}
+
 export default function AddProjectModal() {
   const colorScheme = useColorScheme();
   const [name, setName] = useState('');
@@ -173,63 +182,104 @@ export default function AddProjectModal() {
           <ThemedText type="defaultSemiBold" style={styles.label}>
             Deadline *
           </ThemedText>
-          <TouchableOpacity
-            style={[
-              styles.dateButton,
-              {
-                backgroundColor: colorScheme === 'dark' ? '#2A2A2A' : '#F5F5F5',
-                borderColor:
-                  showErrors && !deadline
-                    ? '#EF4444'
-                    : colorScheme === 'dark'
-                      ? '#3A3A3A'
-                      : '#E0E0E0',
-              },
-            ]}
-            onPress={handleDatePickerOpen}>
-            <Ionicons name="calendar-outline" size={20} color={Colors[colorScheme ?? 'light'].icon} />
-            <ThemedText style={styles.dateText}>
-              {deadline ? deadline.toLocaleDateString() : 'Select deadline (required)'}
-            </ThemedText>
-          </TouchableOpacity>
-          {showDatePicker && (
-            <>
-              <DateTimePicker
-                value={tempDate}
-                mode="date"
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                onChange={(event, selectedDate) => {
-                  if (Platform.OS === 'android') {
-                    if (event.type === 'set' && selectedDate) {
-                      setDeadline(selectedDate);
-                    }
-                    setShowDatePicker(false);
-                  } else {
-                    // iOS: only update temp date, don't save until Done is clicked
-                    if (selectedDate) {
-                      setTempDate(selectedDate);
-                    }
+          {Platform.OS === 'web' ? (
+            <View
+              style={[
+                styles.dateButton,
+                {
+                  backgroundColor: colorScheme === 'dark' ? '#2A2A2A' : '#F5F5F5',
+                  borderColor:
+                    showErrors && !deadline
+                      ? '#EF4444'
+                      : colorScheme === 'dark'
+                        ? '#3A3A3A'
+                        : '#E0E0E0',
+                },
+              ]}>
+              <Ionicons name="calendar-outline" size={20} color={Colors[colorScheme ?? 'light'].icon} />
+              <input
+                type="date"
+                value={deadline ? deadline.toISOString().split('T')[0] : ''}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setDeadline(new Date(e.target.value));
+                    setShowErrors(false);
                   }
                 }}
+                style={{
+                  flex: 1,
+                  fontSize: 16,
+                  padding: 0,
+                  border: 'none',
+                  background: 'transparent',
+                  color: Colors[colorScheme ?? 'light'].text,
+                  outline: 'none',
+                  fontFamily: 'inherit',
+                }}
+                placeholder="Select deadline (required)"
               />
-              {Platform.OS === 'ios' && (
-                <View style={styles.datePickerActions}>
-                  <TouchableOpacity
-                    style={[
-                      styles.datePickerCancelButton,
-                      {
-                        backgroundColor: colorScheme === 'dark' ? '#2A2A2A' : '#F5F5F5',
-                      },
-                    ]}
-                    onPress={handleDatePickerCancel}>
-                    <ThemedText style={styles.datePickerCancelText}>Cancel</ThemedText>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.datePickerButton}
-                    onPress={handleDatePickerConfirm}>
-                    <ThemedText style={styles.datePickerButtonText}>Done</ThemedText>
-                  </TouchableOpacity>
-                </View>
+            </View>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={[
+                  styles.dateButton,
+                  {
+                    backgroundColor: colorScheme === 'dark' ? '#2A2A2A' : '#F5F5F5',
+                    borderColor:
+                      showErrors && !deadline
+                        ? '#EF4444'
+                        : colorScheme === 'dark'
+                          ? '#3A3A3A'
+                          : '#E0E0E0',
+                  },
+                ]}
+                onPress={handleDatePickerOpen}>
+                <Ionicons name="calendar-outline" size={20} color={Colors[colorScheme ?? 'light'].icon} />
+                <ThemedText style={styles.dateText}>
+                  {deadline ? deadline.toLocaleDateString() : 'Select deadline (required)'}
+                </ThemedText>
+              </TouchableOpacity>
+              {showDatePicker && (
+                <>
+                  <DateTimePicker
+                    value={tempDate}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={(event, selectedDate) => {
+                      if (Platform.OS === 'android') {
+                        if (event.type === 'set' && selectedDate) {
+                          setDeadline(selectedDate);
+                        }
+                        setShowDatePicker(false);
+                      } else {
+                        // iOS: only update temp date, don't save until Done is clicked
+                        if (selectedDate) {
+                          setTempDate(selectedDate);
+                        }
+                      }
+                    }}
+                  />
+                  {Platform.OS === 'ios' && (
+                    <View style={styles.datePickerActions}>
+                      <TouchableOpacity
+                        style={[
+                          styles.datePickerCancelButton,
+                          {
+                            backgroundColor: colorScheme === 'dark' ? '#2A2A2A' : '#F5F5F5',
+                          },
+                        ]}
+                        onPress={handleDatePickerCancel}>
+                        <ThemedText style={styles.datePickerCancelText}>Cancel</ThemedText>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.datePickerButton}
+                        onPress={handleDatePickerConfirm}>
+                        <ThemedText style={styles.datePickerButtonText}>Done</ThemedText>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </>
               )}
             </>
           )}
