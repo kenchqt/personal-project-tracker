@@ -16,10 +16,19 @@ export default function ProjectsScreen() {
   const colorScheme = useColorScheme();
   const [projects, setProjects] = useState<Project[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const loadProjects = useCallback(async () => {
-    const data = await getProjects();
-    setProjects(data);
+    try {
+      setLoading(true);
+      const data = await getProjects();
+      setProjects(data);
+    } catch (error) {
+      console.error('Error loading projects:', error);
+      Alert.alert('Error', 'Failed to load projects. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useFocusEffect(
@@ -115,32 +124,40 @@ export default function ProjectsScreen() {
       </View>
 
       <ScrollView style={styles.content}>
-        {STATUS_ORDER.map((status) => (
-          <StatusSection
-            key={status}
-            status={status}
-            projects={groupedProjects[status]}
-            onStatusChange={handleStatusChange}
-            onDelete={handleDelete}
-          />
-        ))}
-
-        {filteredProjects.length === 0 && (
+        {loading ? (
           <View style={styles.emptyState}>
-            <Ionicons
-              name="folder-open-outline"
-              size={64}
-              color={Colors[colorScheme ?? 'light'].icon}
-            />
-            <ThemedText style={styles.emptyText}>
-              {searchQuery ? 'No projects found' : 'No projects yet'}
-            </ThemedText>
-            {!searchQuery && (
-              <TouchableOpacity style={styles.emptyButton} onPress={() => router.push('/modal')}>
-                <ThemedText style={styles.emptyButtonText}>Add Your First Project</ThemedText>
-              </TouchableOpacity>
-            )}
+            <ThemedText style={styles.emptyText}>Loading projects...</ThemedText>
           </View>
+        ) : (
+          <>
+            {STATUS_ORDER.map((status) => (
+              <StatusSection
+                key={status}
+                status={status}
+                projects={groupedProjects[status]}
+                onStatusChange={handleStatusChange}
+                onDelete={handleDelete}
+              />
+            ))}
+
+            {filteredProjects.length === 0 && (
+              <View style={styles.emptyState}>
+                <Ionicons
+                  name="folder-open-outline"
+                  size={64}
+                  color={Colors[colorScheme ?? 'light'].icon}
+                />
+                <ThemedText style={styles.emptyText}>
+                  {searchQuery ? 'No projects found' : 'No projects yet'}
+                </ThemedText>
+                {!searchQuery && (
+                  <TouchableOpacity style={styles.emptyButton} onPress={() => router.push('/modal')}>
+                    <ThemedText style={styles.emptyButtonText}>Add Your First Project</ThemedText>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          </>
         )}
       </ScrollView>
     </ThemedView>

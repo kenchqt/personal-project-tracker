@@ -42,10 +42,18 @@ export default function AddProjectModal() {
 
   const handleAddTech = () => {
     const trimmed = techInput.trim();
-    if (trimmed && !techStack.some((tech) => tech.toLowerCase() === trimmed.toLowerCase())) {
-      setTechStack([...techStack, trimmed]);
-      setTechInput('');
-      setShowErrors(false);
+    if (trimmed) {
+      if (trimmed.length > 50) {
+        Alert.alert('Error', 'Technology name must be 50 characters or less');
+        return;
+      }
+      if (!techStack.some((tech) => tech.toLowerCase() === trimmed.toLowerCase())) {
+        setTechStack([...techStack, trimmed]);
+        setTechInput('');
+        setShowErrors(false);
+      } else {
+        Alert.alert('Error', 'This technology is already in the tech stack');
+      }
     }
   };
 
@@ -56,8 +64,14 @@ export default function AddProjectModal() {
   const handleSubmit = async () => {
     setShowErrors(true);
 
-    if (!name.trim()) {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
       Alert.alert('Error', 'Please enter a project name');
+      return;
+    }
+
+    if (trimmedName.length > 100) {
+      Alert.alert('Error', 'Project name must be 100 characters or less');
       return;
     }
 
@@ -71,10 +85,15 @@ export default function AddProjectModal() {
       return;
     }
 
+    if (techStack.length > 20) {
+      Alert.alert('Error', 'Maximum 20 technologies allowed');
+      return;
+    }
+
     try {
       // Firestore will generate the ID automatically
       const project: Omit<Project, 'id'> = {
-        name: name.trim(),
+        name: trimmedName,
         status,
         deadline: deadline.toISOString(),
         techStack,
@@ -202,7 +221,11 @@ export default function AddProjectModal() {
                 value={deadline ? deadline.toISOString().split('T')[0] : ''}
                 onChange={(e) => {
                   if (e.target.value) {
-                    setDeadline(new Date(e.target.value));
+                    // Create date at midnight UTC to avoid timezone issues
+                    const dateStr = e.target.value;
+                    const [year, month, day] = dateStr.split('-').map(Number);
+                    const date = new Date(Date.UTC(year, month - 1, day));
+                    setDeadline(date);
                     setShowErrors(false);
                   }
                 }}

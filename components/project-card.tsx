@@ -51,14 +51,26 @@ export function ProjectCard({ project, onStatusChange, onDelete }: ProjectCardPr
           <View style={styles.metaItem}>
             <Ionicons name="calendar-outline" size={14} color={Colors[colorScheme ?? 'light'].icon} />
             <ThemedText style={styles.metaText}>
-              {new Date(project.deadline).toLocaleDateString()}
+              {(() => {
+                try {
+                  return new Date(project.deadline).toLocaleDateString();
+                } catch {
+                  return 'Invalid date';
+                }
+              })()}
             </ThemedText>
           </View>
         )}
         <View style={styles.metaItem}>
           <Ionicons name="time-outline" size={14} color={Colors[colorScheme ?? 'light'].icon} />
           <ThemedText style={styles.metaText}>
-            {new Date(project.createdAt).toLocaleDateString()}
+            {(() => {
+              try {
+                return new Date(project.createdAt).toLocaleDateString();
+              } catch {
+                return 'Invalid date';
+              }
+            })()}
           </ThemedText>
         </View>
       </View>

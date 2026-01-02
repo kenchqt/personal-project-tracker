@@ -10,7 +10,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
-import { Project } from '@/types/project';
+import { Project, ProjectStatus } from '@/types/project';
 
 const PROJECTS_COLLECTION = 'projects';
 
@@ -38,12 +38,27 @@ const projectToFirestore = (project: Omit<Project, 'id'>) => {
 
 // Convert Firestore document to Project
 const firestoreToProject = (docId: string, data: any): Project => {
+  // Validate and normalize deadline
+  let deadline: string | null = null;
+  if (data.deadline) {
+    if (typeof data.deadline === 'string') {
+      deadline = data.deadline;
+    } else if (data.deadline instanceof Timestamp || data.deadline?.toDate) {
+      // If deadline was stored as Timestamp, convert to ISO string
+      deadline = data.deadline.toDate().toISOString();
+    }
+  }
+
+  // Validate status
+  const validStatuses: ProjectStatus[] = ['Planned', 'In Progress', 'Done', 'Cancelled'];
+  const status = validStatuses.includes(data.status) ? data.status : 'Planned';
+
   return {
     id: docId,
     name: data.name || '',
-    status: data.status || 'Planned',
-    deadline: data.deadline || null,
-    techStack: data.techStack || [],
+    status,
+    deadline,
+    techStack: Array.isArray(data.techStack) ? data.techStack : [],
     createdAt: timestampToISO(data.createdAt),
   };
 };
